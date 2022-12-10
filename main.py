@@ -40,18 +40,13 @@ for j in range(1, i):
         data = f.read()
         with open("Hashes/MDA5/hashFile_"+(str(j)), "wt+") as hash_file_MDA5:
             hash_file_MDA5.write(hashlib.md5(data.encode('utf-8')).hexdigest())
-        with open("Hashes/SHA1/hashFile_"+(str(j)), "wt+") as hash_file_SHA1:
-            hash_file_SHA1.write(hashlib.sha1(data.encode('utf-8')).hexdigest())
 
-
-# Using Dedupe to find duplicates in MDA5 Hashes
-# deduper = dedupe.Dedupe(fields)
-# for j in range(1, i-1):
-#     with open("Hashes/MDA5/hashFile_"+(str(j)), "r") as f:
-#         data = f.read()
-#         deduper.sample(data)
-
-
-# Using Dedupe to find duplicates in SHA1 Hashes
-
-
+dedupHashTable = {}
+for j in range(1, i):
+    with open("Hashes/MDA5/hashFile_"+(str(j)), "r") as f:
+        data = f.read()
+        if data in dedupHashTable:
+            dedupHashTable[data].append(j)
+        else:
+            dedupHashTable[data] = [j]
+print(dedupHashTable)
