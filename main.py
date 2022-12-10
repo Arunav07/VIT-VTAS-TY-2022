@@ -8,15 +8,16 @@ binaryFile = open("binary.txt", "wt+")
 i=0 
 with open("text.txt", "r") as f:
     for line in f:
+        if(line=="\n"):
+            continue
         i+=1
-        # print("{} : {}".format(line.strip(),int(str( bin(int(binascii.hexlify(line.strip().encode('utf8')), 16)))[2:])))
         binaryFile.write("{}\n".format(int(str(bin(int(binascii.hexlify(line.strip().encode('utf8')), 16)))[2:])))
 i=1
 binaryFile.close()
 binaryFile = open("binary.txt", "r")
 
 print("Now splitting binary file")
-chunk_size = 64
+chunk_size = 1024
 with open ("binary.txt", "r") as myfile:
     chunk = myfile.read(chunk_size)
     while (chunk != ""):
@@ -60,3 +61,9 @@ for j in range(1, i):
             dedupHashTable_SHA1[data].append(j)
         else:
             dedupHashTable_SHA1[data] = [j]
+
+for k in range(len(dedupHashTable_MDA5)):
+    if(len(dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]])>1):
+        print("Duplicate files are: ")
+        print( list(dedupHashTable_MDA5.keys())[k], " : ", dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]])
+            
