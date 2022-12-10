@@ -9,9 +9,9 @@ i=0
 with open("text.txt", "r") as f:
     for line in f:
         if(line=="\n"):
-            continue
-        i+=1
-        binaryFile.write("{}\n".format(int(str(bin(int(binascii.hexlify(line.strip().encode('utf8')), 16)))[2:])))
+            pass
+        else:
+            binaryFile.write("{}\n".format(int(str(bin(int(binascii.hexlify(line.strip().encode('utf8')), 16)))[2:])))
 i=1
 binaryFile.close()
 binaryFile = open("binary.txt", "r")
