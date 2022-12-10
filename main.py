@@ -4,6 +4,7 @@ import dedupe
 
 file = open("text.txt", "r")
 binaryFile = open("binary.txt", "wt+")
+textFile = open("textWrite.txt", "wt+")
 # Path: text.txt
 i=0 
 with open("text.txt", "r") as f:
@@ -12,6 +13,7 @@ with open("text.txt", "r") as f:
             pass
         else:
             binaryFile.write("{}\n".format(int(str(bin(int(binascii.hexlify(line.strip().encode('utf8')), 16)))[2:])))
+            textFile.write("{}\n".format(line.strip()))
 i=1
 binaryFile.close()
 binaryFile = open("binary.txt", "r")
@@ -62,8 +64,10 @@ for j in range(1, i):
         else:
             dedupHashTable_SHA1[data] = [j]
 
+print("Duplicates found using MDA5: ")
 for k in range(len(dedupHashTable_MDA5)):
     if(len(dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]])>1):
-        print("Duplicate files are: ")
+        print("Duplicate files are: ",k)
         print( list(dedupHashTable_MDA5.keys())[k], " : ", dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]])
+        print(open(textFile.name).readlines()[dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]][0]-1], open(textFile.name).readlines()[dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]][1]-1])
             
