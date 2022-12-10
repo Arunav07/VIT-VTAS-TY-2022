@@ -38,15 +38,25 @@ print("Now finding duplicates")
 for j in range(1, i):
     with open("Chunks/chunkFile_"+(str(j)), "r") as f:
         data = f.read()
+        with open("Hashes/MDA5/hashFile_"+(str(j)), "wt+") as hash_file_MDA5:
+            hash_file_MDA5.write(hashlib.md5(data.encode('utf-8')).hexdigest())
         with open("Hashes/SHA1/hashFile_"+(str(j)), "wt+") as hash_file_SHA1:
             hash_file_SHA1.write(hashlib.sha1(data.encode('utf-8')).hexdigest())
 
-dedupHashTable = {}
+dedupHashTable_MDA5 = {}
+for j in range(1, i):
+    with open("Hashes/MDA5/hashFile_"+(str(j)), "r") as f:
+        data = f.read()
+        if data in dedupHashTable_MDA5:
+            dedupHashTable_MDA5[data].append(j)
+        else:
+            dedupHashTable_MDA5[data] = [j]
+
+dedupHashTable_SHA1 = {}
 for j in range(1, i):
     with open("Hashes/SHA1/hashFile_"+(str(j)), "r") as f:
         data = f.read()
-        if data in dedupHashTable:
-            dedupHashTable[data].append(j)
+        if data in dedupHashTable_SHA1:
+            dedupHashTable_SHA1[data].append(j)
         else:
-            dedupHashTable[data] = [j]
-print(dedupHashTable)
+            dedupHashTable_SHA1[data] = [j]
