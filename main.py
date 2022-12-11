@@ -1,6 +1,4 @@
-import os
 import binascii
-import dedupe
 
 file = open("text.txt", "r")
 binaryFile = open("binary.txt", "wt+")
@@ -24,12 +22,7 @@ with open ("binary.txt", "r") as myfile:
     chunk = myfile.read(chunk_size)
     while (chunk != ""):
         with open("Chunks/chunkFile_"+(str(i)), "wt+") as chunk_file:
-            if('\n' in chunk):
-                chunk = chunk.split("\n")
-                chunk_file.write(chunk[0])
-                chunk_file.write(chunk[1])
-            else:
-                chunk=""
+            chunk_file.write(chunk)
         i+=1
         chunk = myfile.read(chunk_size)
 
@@ -69,5 +62,5 @@ for k in range(len(dedupHashTable_MDA5)):
     if(len(dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]])>1):
         print("Duplicate files are: ",k)
         print( list(dedupHashTable_MDA5.keys())[k], " : ", dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]])
-        print(open(textFile.name).readlines()[dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]][0]-1], open(textFile.name).readlines()[dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]][1]-1])
+        print(open(textFile.name).read().splitlines()[dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]][0]-1])
             
