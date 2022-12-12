@@ -5,7 +5,7 @@ binaryFile = open("binary.txt", "wt+")
 textFile = open("textWrite.txt", "wt+")
 # Path: text.txt
 i=0 
-with open("text.txt", "r") as f:
+with open("text.txt", "r", encoding='utf-8') as f:
     for line in f:
         if(line=="\n"):
             pass
@@ -17,7 +17,7 @@ binaryFile.close()
 binaryFile = open("binary.txt", "r")
 
 print("Now splitting binary file")
-chunk_size = 1024
+chunk_size = 10240
 with open ("binary.txt", "r") as myfile:
     chunk = myfile.read(chunk_size)
     while (chunk != ""):
