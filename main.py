@@ -38,6 +38,8 @@ for j in range(1, i):
             hash_file_MDA5.write(hashlib.md5(data.encode('utf-8')).hexdigest())
         with open("Hashes/SHA1/hashFile_"+(str(j)), "wt+") as hash_file_SHA1:
             hash_file_SHA1.write(hashlib.sha1(data.encode('utf-8')).hexdigest())
+        with open("Hashes/SHA256/hashFile_"+(str(j)), "wt+") as hash_file_SHA256:
+            hash_file_SHA256.write(hashlib.sha256(data.encode('utf-8')).hexdigest())
 
 dedupHashTable_MDA5 = {}
 for j in range(1, i):
@@ -57,10 +59,32 @@ for j in range(1, i):
         else:
             dedupHashTable_SHA1[data] = [j]
 
+dedupHashTable_SHA256 = {}
+for j in range(1, i):
+    with open("Hashes/SHA256/hashFile_"+(str(j)), "r") as f:
+        data = f.read()
+        if data in dedupHashTable_SHA256:
+            dedupHashTable_SHA256[data].append(j)
+        else:
+            dedupHashTable_SHA256[data] = [j]
+
 print("Duplicates found using MDA5: ")
 for k in range(len(dedupHashTable_MDA5)):
     if(len(dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]])>1):
         print("Duplicate files are: ",k)
         print( list(dedupHashTable_MDA5.keys())[k], " : ", dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]])
         print(open(textFile.name).read().splitlines()[dedupHashTable_MDA5[list(dedupHashTable_MDA5.keys())[k]][0]-1])
-            
+
+print("Duplicates found using SHA1: ")
+for k in range(len(dedupHashTable_SHA1)):
+    if(len(dedupHashTable_SHA1[list(dedupHashTable_SHA1.keys())[k]])>1):
+        print("Duplicate files are: ",k)
+        print( list(dedupHashTable_SHA1.keys())[k], " : ", dedupHashTable_SHA1[list(dedupHashTable_SHA1.keys())[k]])
+        print(open(textFile.name).read().splitlines()[dedupHashTable_SHA1[list(dedupHashTable_SHA1.keys())[k]][0]-1])
+
+print("Duplicates found using SHA256: ")
+for k in range(len(dedupHashTable_SHA256)):
+    if(len(dedupHashTable_SHA256[list(dedupHashTable_SHA256.keys())[k]])>1):
+        print("Duplicate files are: ",k)
+        print( list(dedupHashTable_SHA256.keys())[k], " : ", dedupHashTable_SHA256[list(dedupHashTable_SHA256.keys())[k]])
+        print(open(textFile.name).read().splitlines()[dedupHashTable_SHA256[list(dedupHashTable_SHA256.keys())[k]][0]-1])
