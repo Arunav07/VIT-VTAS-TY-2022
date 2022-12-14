@@ -1,5 +1,11 @@
 Main1.py
 tempCodeRunnerFile.py
 
-*.csv
 *.json
+*.svg
+*.png
+*.pdf
+*.docx
+
+Hashes
+Chunks
