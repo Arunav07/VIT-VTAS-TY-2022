@@ -6,6 +6,8 @@ tempCodeRunnerFile.py
 *.png
 *.pdf
 *.docx
-
+*.tif
+/*.eps
+/*.pptx
 Hashes
 Chunks
