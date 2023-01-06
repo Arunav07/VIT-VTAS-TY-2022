@@ -63,8 +63,8 @@ def Hash_File(path):
 Duplic = {}
 folders = Path('C:/Users/gurve/My Projects/Data_Deduplication-VIT-Veritas-/Test_dir')
 files = sorted(os.listdir(folders))
-
-# for i in files:
+         
+for i in files:
     # Iterate over the files
     # Find the duplicated files
     # Append them to the Duplic
