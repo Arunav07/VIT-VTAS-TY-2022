@@ -61,7 +61,7 @@ def Hash_File(path):
 
 
 Duplic = {}
-folders = Path('C:/Users/gurve/VS CODE 3/Test/F1')
+folders = Path('C:/Users/gurve/My Projects/Data_Deduplication-VIT-Veritas-/Test_dir')
 files = sorted(os.listdir(folders))
 
 # for i in files:
