@@ -19,7 +19,7 @@ function App() {
     localStorage.setItem("Formdata",formData);
 
 
-    fetch('https://httpbin.org/post', {
+    fetch('http://localhost:5000/upload', {
       method: 'POST',
       body: formData
     })
