@@ -8,32 +8,29 @@ function App() {
   }
 
   const handleUpload = (event) => {
-    // event.preventDefault();
-    if (!fileList) {
-      return;
-    }
+    event.preventDefault();
+    
 
     const formData = new FormData();
     files.forEach((file, i) => {
       formData.append(`file-${i}`, file, file.name);
     });
-    // formData.append('file', file);
-    console.log(formData);
-    localStorage.setItem("Formdata",JSON.stringify(formData));
+    // console.log(Array.from(formData));
+    localStorage.setItem("Formdata",formData);
 
 
-    fetch('https://httpbin.org/post', {
+    fetch('http://localhost:5000/upload', {
       method: 'POST',
       body: formData
     })
     .then(response => response.json())
-    .then(data => {
+    .then(formData => {
       try {
         // JSON.parse(data);
-        console.log('Success:', data);
+        console.log('Success:', formData);
     }
     catch (error) {
-        console.log('Error parsing JSON:', error, data);
+        console.log('Error parsing JSON:', error, formData);
     }
     })
     .catch(error => {
@@ -61,8 +58,8 @@ function App() {
       </ul>
 
         <button className="uploadButton" type='submit' onClick={(e)=>{
+          // console.log(files);
           handleUpload(e);
-          console.log(files)
         }} >Upload</button>
       </form>
     </div>
