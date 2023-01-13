@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Data Deduplication</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js"></script>
+</head>
+<style>
+    body {
+        background-color: rgb(16, 17, 23);
+        color: aliceblue;
+    }
+
+    .result {
+        width: 100%;
+        margin: 10rem 0
+    }
+
+    .result .chart h2 {
+        display: block;
+        text-align: center;
+        position: absolute;
+    }
+
+    .chart {
+        position: relative;
+        align-items: center;
+        display: flex;
+        justify-content: center;
+    }
+
+    .data {
+        border-bottom: 1px solid whitesmoke;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+</style>
+
+<body>
+    <div class="data">
+        <div class="">
+            <h1>Data Dedup Percentage</h1>
+            <h2 id="fs"></h2>
+            <h2 id="ts"></h2>
+
+        </div>
+        <a href="/"><Button type="button" class="btn btn-warning">Go Back</Button></a>
+    </div>
+    <div class="result">
+        <div class="chart"></div>
+    </div>
+</body>
+<script>
+    let result = document.querySelector('.chart');
+    let localResult = localStorage.getItem('data');
+    console.log(JSON.parse(localResult));
+    localResult = JSON.parse(localResult);
+    if (localResult) {
+        result.setAttribute('data-percent', localResult.fileSize / localResult.total_size * 100);
+        result.appendChild(document.createElement('h2'));
+        result.lastChild.innerHTML = localResult.fileSize / localResult.total_size * 100 + "%";
+    }
+
+    $(function () {
+        $('.chart').easyPieChart({
+            size: 520,
+            barColor: "#36e617",
+            scaleLength: 5,
+            lineWidth: 15,
+            trackColor: "#525151",
+            lineCap: "circle",
+            animate: 2000,
+        });
+    });
+    $("#fs").html("File Size: " + localResult.fileSize + " Bytes");
+    $("#ts").html("Total Size: " + localResult.total_size + " Bytes");
+</script>
+
+</html>
