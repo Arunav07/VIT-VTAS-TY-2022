@@ -33,18 +33,13 @@ def dedup():
 def upload():
     global file_locations, total_sizes
     files = request.files.getlist('file')
-    chunk_size = 2048
     for file in files:
         filename = file.filename
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         total_sizes += os.path.getsize(filepath)
         # read file and calculate the hash
-        hasher = hashlib.md5()
-        with open(filepath, 'rb') as f:
-            buf = f.read(chunk_size)
-            hasher.update(buf)
-        file_hash = hasher.hexdigest()
+        file_hash = MD5Hash(filepath)
 
         if file_hash in file_locations:
             file_locations[file_hash].append(filepath)
@@ -52,6 +47,13 @@ def upload():
             file_locations[file_hash] = [filepath]
     return jsonify({'message': 'Success', 'size': len(file_locations), 'file_locations': file_locations, 'total_size': total_sizes,'fileSize': os.path.getsize(file_locations[file_hash][0])})
 
+def MD5Hash(file):
+    chunk_size = 1024
+    hasher = hashlib.md5()
+    with open(file, 'rb') as f:
+        buf = f.read(1024)
+        hasher.update(buf)
+    return hasher.hexdigest()
 
 def hashFiles(file):
     blocksize = 1024

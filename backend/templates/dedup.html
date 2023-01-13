@@ -62,9 +62,9 @@
     console.log(JSON.parse(localResult));
     localResult = JSON.parse(localResult);
     if (localResult) {
-        result.setAttribute('data-percent', localResult.fileSize / localResult.total_size * 100);
+        result.setAttribute('data-percent', 100-localResult.fileSize / localResult.total_size * 100);
         result.appendChild(document.createElement('h2'));
-        result.lastChild.innerHTML = localResult.fileSize / localResult.total_size * 100 + "%";
+        result.lastChild.innerHTML = 100-localResult.fileSize / localResult.total_size * 100 + "%";
     }
 
     $(function () {
