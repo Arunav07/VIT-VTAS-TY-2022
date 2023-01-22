@@ -1,5 +1,5 @@
 import hashlib
-from flask import Flask, render_template, flash, request, redirect, jsonify
+from flask import Flask, render_template,  request,  jsonify
 import os
 app = Flask(__name__)
 
@@ -49,15 +49,20 @@ def upload():
             hashedSet.add(hashedData)
             texts[hashedData]=text
 
-        Duplic = checkFileDuplicate(hashList, hashedSet, Duplic)
+        Duplic = checkFileDuplicate(hashList, hashedSet, Duplic, texts)
         total_size+=currentsize
     Data = createFile(Duplic)
     # return jsonify({'message': 'Success', "Duplic": Duplic, 'fileSize': currentsize, 'total_size': total_size})
     return Data
 
-def checkFileDuplicate(hashList, hashedSet, Duplic):        
+def checkFileDuplicate(hashList, hashedSet, Duplic, texts):        
     for hash in hashedSet:
             Duplic[hash] =hashList.count(hash)
+    i=0
+    for hash_value, chunk in texts.items():
+        with open('backend/Chunks/chunk_'+str(i), 'wb+') as chunk_file:
+            chunk_file.write(bytes(chunk, 'utf-8').decode('unicode_escape'))
+        i+=1
     return Duplic
 
 
@@ -68,7 +73,7 @@ def createFile(Duplic):
         f.write(texts[key])
     f.close()
     print(len(texts), len(Duplic))
-    return jsonify({'message': 'Success','fileSize': os.path.getsize("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\db\\test.txt"),'total_size': total_size, 'Duplic': Duplic, 'texts': texts})
+    return jsonify({'message': 'Success','fileSize': os.stat("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\backend\\Chunks").st_size,'total_size': total_size, 'Duplic': Duplic, 'texts': texts})
 
 if __name__ == '__main__':
     app.run(debug=True)
