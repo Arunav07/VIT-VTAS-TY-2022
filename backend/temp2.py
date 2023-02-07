@@ -37,18 +37,16 @@ def upload():
         fileR = bytes(file.read())
         chunk_size = 1024
         counter = 0
-        currentsize = 0
+        currentsize = 0     
         global texts
         for i in range(0, len(fileR), chunk_size):
             counter+=1
             currentsize+=len(fileR[i:i+chunk_size])
             text = str(fileR[i:i+chunk_size], 'utf-8')
             hashedData = hashlib.md5(fileR[i:i+chunk_size]).hexdigest()
-
             hashList.append(hashedData)
             hashedSet.add(hashedData)
             texts[hashedData]=text
-
         Duplic = checkFileDuplicate(hashList, hashedSet, Duplic, texts)
         total_size+=currentsize
     Data = createFile(Duplic)
@@ -60,8 +58,9 @@ def checkFileDuplicate(hashList, hashedSet, Duplic, texts):
             Duplic[hash] =hashList.count(hash)
     i=0
     for hash_value, chunk in texts.items():
-        with open('backend/Chunks/chunk_'+str(i), 'wb+') as chunk_file:
-            chunk_file.write(bytes(chunk, 'utf-8').decode('unicode_escape'))
+        os.makedirs('backend/Chunks/Chunks-'+str(i), exist_ok=True)
+        with open('backend/Chunks/Chunks-'+str(i)+'/chunk_'+str(i)+'.txt', 'wb+') as chunk_file:
+            chunk_file.write(chunk.encode())
         i+=1
     return Duplic
 
