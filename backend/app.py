@@ -41,7 +41,7 @@ def FindDuplicate(FileList):
         else:
             Duplic[file_hash] = [filename]
 
-    # print(Duplic)
+    print(Duplic)
 
     return Duplic
 
