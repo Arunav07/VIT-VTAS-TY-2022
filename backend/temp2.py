@@ -3,7 +3,7 @@ from flask import Flask, render_template,  request,  jsonify
 import os
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'C:\\Users\\Arunav\\Desktop\\VTAS_Re\\db'
+UPLOAD_FOLDER = 'C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\db'
 
 app.secret_key = "Cairocoders-Ednalan"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -68,12 +68,12 @@ def checkFileDuplicate(hashList, hashedSet, Duplic, texts):
 
 def createFile(Duplic):
     global total_size, texts
-    f = open("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\db\\test.txt", "wt+")
+    f = open("C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\db\\test.txt", "wt+")
     for key, value in texts.items():  
         f.write(texts[key])
     f.close()
     print(len(texts), len(Duplic))
-    return jsonify({'message': 'Success','fileSize': os.stat("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\backend\\Chunks").st_size,'total_size': total_size, 'Duplic': Duplic, 'texts': texts})
+    return jsonify({'message': 'Success','fileSize': os.stat("C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\backend\\Chunks").st_size,'total_size': total_size, 'Duplic': Duplic, 'texts': texts})
 
 if __name__ == '__main__':
     app.run(debug=True)
