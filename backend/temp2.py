@@ -71,14 +71,6 @@ def checkFileDuplicate(hashList, hashedSet, Duplic, texts):
 
 
 def createFile(Duplic):
-<<<<<<< HEAD
-    global texts, numberofFiles
-    f = open("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\db\\test.txt", "wt+")
-    for key, value in texts.items():  
-        f.write(texts[key])
-    f.close()
-    return jsonify({'message': 'Success','fileSize': os.stat("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\backend\\Chunks").st_size, 'Duplic': Duplic, 'texts': texts})
-=======
     global total_size, texts
     f = open("C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\db\\test.txt", "wt+")
     for key, value in texts.items():  
@@ -86,7 +78,6 @@ def createFile(Duplic):
     f.close()
     print(len(texts), len(Duplic))
     return jsonify({'message': 'Success','fileSize': os.stat("C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\backend\\Chunks").st_size,'total_size': total_size, 'Duplic': Duplic, 'texts': texts})
->>>>>>> temp2
 
 if __name__ == '__main__':
     app.run(debug=True)
