@@ -24,34 +24,39 @@ def dedup():
     return render_template('dedup.html')
 
 #global variables    
-total_size = 0
 texts = dict()
+AllFiles={}
+numberofFiles=0
 @app.route('/upload', methods=['POST'])
 def upload():
-    Duplic = {}
-    hashList = []
-    hashedSet = set()
     files = request.files.getlist('file')
-    global total_size
+    global numberofFiles, AllFiles
+    numberofFiles = len(files)
     for file in files:
+        Duplic = {}
+        total_size = 0
+        hashList = []
+        hashedSet = set()
         fileR = bytes(file.read())
         chunk_size = 1024
         counter = 0
         currentsize = 0     
-        global texts
+        texts = {}
         for i in range(0, len(fileR), chunk_size):
-            counter+=1
-            currentsize+=len(fileR[i:i+chunk_size])
-            text = str(fileR[i:i+chunk_size], 'utf-8')
-            hashedData = hashlib.md5(fileR[i:i+chunk_size]).hexdigest()
+            counter += 1
+            currentsize += len(fileR[i:i + chunk_size])
+            text = str(fileR[i:i + chunk_size], 'utf-8')
+            hashedData = hashlib.md5(fileR[i:i + chunk_size]).hexdigest()
             hashList.append(hashedData)
             hashedSet.add(hashedData)
-            texts[hashedData]=text
+            texts[hashedData] = text
         Duplic = checkFileDuplicate(hashList, hashedSet, Duplic, texts)
-        total_size+=currentsize
-    Data = createFile(Duplic)
-    # return jsonify({'message': 'Success', "Duplic": Duplic, 'fileSize': currentsize, 'total_size': total_size})
-    return Data
+        total_size += currentsize
+        Data = createFile(Duplic)
+        AllFiles[file.filename] = [Data, total_size]
+    return jsonify({'message': 'Success', "Duplic": Data, 'fileSize': currentsize, 'total_size': total_size})
+    # return jsonify(AllFiles)
+
 
 def checkFileDuplicate(hashList, hashedSet, Duplic, texts):        
     for hash in hashedSet:
@@ -62,17 +67,16 @@ def checkFileDuplicate(hashList, hashedSet, Duplic, texts):
         with open('backend/Chunks/Chunks-'+str(i)+'/chunk_'+str(i)+'.txt', 'wb+') as chunk_file:
             chunk_file.write(chunk.encode())
         i+=1
-    return Duplic
+    return jsonify(Duplic)
 
 
 def createFile(Duplic):
-    global total_size, texts
+    global texts, numberofFiles
     f = open("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\db\\test.txt", "wt+")
     for key, value in texts.items():  
         f.write(texts[key])
     f.close()
-    print(len(texts), len(Duplic))
-    return jsonify({'message': 'Success','fileSize': os.stat("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\backend\\Chunks").st_size,'total_size': total_size, 'Duplic': Duplic, 'texts': texts})
+    return jsonify({'message': 'Success','fileSize': os.stat("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\backend\\Chunks").st_size, 'Duplic': Duplic, 'texts': texts})
 
 if __name__ == '__main__':
     app.run(debug=True)

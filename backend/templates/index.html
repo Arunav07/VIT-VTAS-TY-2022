@@ -81,12 +81,11 @@
                 throw new Error("Request Failed")
             })
             .then(data => {
+                console.log(JSON.stringify(data));
                 localStorage.setItem("data", JSON.stringify(data));
-                console.log(data);
             })
             .catch(error => {
                 console.log(error);
-                
             });
 
         for (var i = 0; i < input.files.length; i++) {
@@ -96,12 +95,15 @@
             reader.onload = function () {
                 var fileAsBase64 = reader.result.split(',')[1];
                 localStorage.setItem(fileName, fileAsBase64);
+                var fileAsBase65 = localStorage.getItem(fileName);
+                var fileAsText = atob(fileAsBase65.split(',')[1]);
+                console.log(fileAsText);
             };
             reader.readAsDataURL(file);
         }
-       setTimeout(function () {
+        setTimeout(function () {
             window.location.href = "/dedup";
-        }, 5000);
+        }, 500000);
     });
 
 </script>
