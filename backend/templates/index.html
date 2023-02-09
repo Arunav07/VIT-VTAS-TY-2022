@@ -95,15 +95,12 @@
             reader.onload = function () {
                 var fileAsBase64 = reader.result.split(',')[1];
                 localStorage.setItem(fileName, fileAsBase64);
-                var fileAsBase65 = localStorage.getItem(fileName);
-                var fileAsText = atob(fileAsBase65.split(',')[1]);
-                console.log(fileAsText);
             };
             reader.readAsDataURL(file);
         }
         setTimeout(function () {
             window.location.href = "/dedup";
-        }, 500000);
+        }, 5000);
     });
 
 </script>

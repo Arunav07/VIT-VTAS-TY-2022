@@ -17,7 +17,11 @@
 
     .result {
         width: 100%;
-        margin: 10rem 0
+        margin: 10rem 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        justify-content: space-evenly;
     }
 
     .result .chart h2 {
@@ -52,26 +56,31 @@
         </div>
         <a href="/"><Button type="button" class="btn btn-warning">Go Back</Button></a>
     </div>
-    <div class="result">
-        <div class="chart"></div>
-    </div>
+    <div class="result"></div>
 </body>
 <script>
 
-
-    let result = document.querySelector('.chart');
+    let resu = document.querySelector('.result');
     let localResult = localStorage.getItem('data');
     console.log(JSON.parse(localResult));
     localResult = JSON.parse(localResult);
-    if (localResult) {
-        result.setAttribute('data-percent', 100-localResult.fileSize / localResult.total_size * 100);
-        result.appendChild(document.createElement('h2'));
-        result.lastChild.innerHTML = 100-localResult.fileSize / localResult.total_size * 100 + "%";
-    }
-
-    
-    let numberOfFiles = localResult?.Duplic?.length;
+        
+    let numberOfFiles = localResult?.Duplic["numberofFiles"];
     console.log(numberOfFiles);
+    let fileNames = Object.keys(localResult?.Duplic);
+    fileNames = fileNames.filter((item) => item !== "fileSize" && item !== "total_size" && item !== "numberofFiles");
+    console.log(fileNames);
+
+    if (localResult) {
+    for(let i=0;i<numberOfFiles;i++){
+        resu.appendChild(document.createElement('div'));
+        resu.lastChild.classList.add('chart');
+        resu.lastChild.setAttribute('data-percent', 100-localResult?.Duplic[fileNames[i]][0]?.fileSize / localResult?.Duplic[fileNames[i]][1] * 100);
+        resu.lastChild.appendChild(document.createElement('h2'));
+        resu.lastChild.lastChild.innerHTML =fileNames[i]+": "+(100-localResult?.Duplic[fileNames[i]][0]?.fileSize / localResult?.Duplic[fileNames[i]][1] * 100).toString() + "%";
+    }
+}
+
 
     $(function () {
         $('.chart').easyPieChart({
@@ -84,8 +93,8 @@
             animate: 2000,
         });
     });
-    $("#fs").html("File Size: " + localResult.fileSize + " Bytes");
-    $("#ts").html("Total Size: " + localResult.total_size + " Bytes");
+    $("#fs").html("File Size: " + localResult?.Duplic[fileNames[numberOfFiles-1]][0]?.fileSize + " Bytes");
+    $("#ts").html("Total Size: " + localResult?.Duplic[fileNames[numberOfFiles-1]][1] + " Bytes");
 </script>
 
 </html>
