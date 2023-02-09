@@ -1,57 +1,64 @@
 <!DOCTYPE html>
 <html>
+
 <head>
- <title>Data Deduplication</title>
- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
- <link rel="stylesheet" type="text/css" href="new.css">
+    <title>Data Deduplication</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet"
+        id="bootstrap-css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 
 </head>
 <div id="wrapper">
-            <div id="page-wrapper">
-                <div class="row">
-                    <div class="container">
-                        <div id="identitycard" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-                            <div class="panel panel-info">
-                                <div class="panel-heading">
-                                    <div class="panel-title">Select file(s) to upload</div>
-                                </div>
-                                <div class="panel-body">
-        <p>
-         {% with messages = get_flashed_messages() %}
-           {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-success">
-             <strong>{{ message }}</strong>
-           </div>
-          {% endfor %}
-           {% endif %}
-         {% endwith %}
-        </p>
-                                    <div class="row">
-                                        <p style="padding: 8px;" class="text-center">File to upload txt, pdf, png, jpg, jpeg, gif</p>
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="container">
+                <div id="identitycard" style="margin-top:50px"
+                    class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="panel-title">Select file(s) to upload</div>
+                        </div>
+                        <div class="panel-body">
+                            <p>
+                                {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                {% for message in messages %}
+                            <div class="alert alert-success">
+                                <strong>{{ message }}</strong>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                            {% endwith %}
+                            </p>
+                            <div class="row">
+                                <p style="padding: 8px;" class="text-center">File to upload txt, pdf, png, jpg, jpeg,
+                                    gif</p>
+                            </div>
+                            <div class="row" style="padding: 10px 15px 9px;">
+                                <form method="post" action="/" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <div class="row" style="margin-bottom: 20px;">
+                                            <div
+                                                class="col-md-12 col-sm-12 col-xs-12 col-lg-12 col-md-offset-3 col-sm-offset-3 col-xs-offset-2">
+                                                <input id="myFiles" type="file" name="files[]" multiple="true"
+                                                    autocomplete="off" required>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center" style="padding-left: 20px;padding-right: 20px;">
+                                            <input type="submit" value="Submit" id="submitBtn"
+                                                class="btn btn-lg btn-block btn-success"
+                                                style="border-radius: 50px;background-color:#35832f">
+                                        </div>
                                     </div>
-                                    <div class="row" style="padding: 10px 15px 9px;">
-                                        <form method="post" action="/" enctype="multipart/form-data">
-                                            <div class="form-group"> 
-                                                <div class="row" style="margin-bottom: 20px;">
-                                                    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12 col-md-offset-3 col-sm-offset-3 col-xs-offset-2"> 
-                                                        <input type="file" name="files[]" multiple="true" autocomplete="off" required> 
-                                                    </div>
-                                                </div>
-                                                <div class="row text-center" style="padding-left: 20px;padding-right: 20px;">
-             <input type="submit" value="Submit" class="btn btn-lg btn-block btn-success" style="border-radius: 50px;background-color:#35832f">
-            </div>                                                 
-                                            </div>                                                                                          
-                                        </form>
-                                    </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
+    </div>
 </div>
 <form id="form-data">
     <label for="file_name">File Name:</label>
@@ -90,4 +97,49 @@
             </table>
   </div>
 </body>
+<script>
+    var input = document.getElementById("myFiles");
+    var submitBtn = document.getElementById("submitBtn");
+    submitBtn.addEventListener("click", function (event) {
+        event.preventDefault(); // prevent the form from submitting
+        var formData = new FormData();
+        for (var i = 0; i < input.files.length; i++) {
+            var file = input.files[i];
+            formData.append('file', file);
+        }
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json()
+                }
+                throw new Error("Request Failed")
+            })
+            .then(data => {
+                console.log(JSON.stringify(data));
+                localStorage.setItem("data", JSON.stringify(data));
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
+        for (var i = 0; i < input.files.length; i++) {
+            var file = input.files[i];
+            var fileName = file.name;
+            var reader = new FileReader();
+            reader.onload = function () {
+                var fileAsBase64 = reader.result.split(',')[1];
+                localStorage.setItem(fileName, fileAsBase64);
+            };
+            reader.readAsDataURL(file);
+        }
+        setTimeout(function () {
+            window.location.href = "/dedup";
+        }, 5000);
+    });
+
+</script>
+
 </html>
