@@ -67,7 +67,7 @@ def upload():
         print ("Shrinkage Size :",ShrinkSize)
 
         createChunks(Unique_chunks, file.filename)
-        createShrinkFile(Unique_chunks, file.filename)  
+        # createShrinkFile(Unique_chunks, file.filename)  
         DedupData[file.filename] = [OriginalSize, ShrinkSize]
 
     print("AllFiles : ",AllFiles)
