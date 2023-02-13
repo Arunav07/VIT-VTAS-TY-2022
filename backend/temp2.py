@@ -1,9 +1,11 @@
 import hashlib
+from io import BytesIO
+from PIL import Image
 from flask import Flask, render_template,  request,  jsonify, make_response
 import os
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'C:\\Users\\Arunav\\Desktop\\VTAS_Re\\db'
+UPLOAD_FOLDER = 'C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\db'
 
 app.secret_key = "Cairocoders-Ednalan"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -11,8 +13,10 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/')
 def index():
@@ -23,68 +27,112 @@ def index():
 def dedup():
     return render_template('dedup.html')
 
-#global variables    
-AllFiles={}
-numberofFiles=0
+
+# global variables
+DedupData = {}
+numberofFiles = 0
+
 @app.route('/upload', methods=['POST'])
 def upload():
+
     files = request.files.getlist('file')
-    print(files)
     global numberofFiles, AllFiles
     numberofFiles = len(files)
-    print(numberofFiles)
+
+    print("Files uploaded : ", files)
+    print("Number of files uploaded : ", numberofFiles)
+
     for file in files:
-        texts = dict()
+        print(file.filename)
+        # Unique_chunks is a dictionary that stores the hash value as key and the chunk content bytes as value . It has the unique hashed value of chunks and its content
+        Unique_chunks = {}
+        # Duplic is a dictionary that stores the hash value as key and the number of times it occurs as value
         Duplic = {}
-        total_size = 0
+        # It is a list of all hash value calculated
         hashList = []
-        hashedSet = set()
+        # hashedSet = set()
+        # print(fileR)
+        chunk_size = 60
+        ShrinkSize = 0
+        OriginalSize = 0
+
         fileR = bytes(file.read())
-        chunk_size = 1024
-        counter = 0
-        currentsize = 0     
-        texts = {}
-        for i in range(0, len(fileR), chunk_size):
-            counter += 1
-            currentsize += len(fileR[i:i + chunk_size])
-            text = str(bytes(fileR[i:i + chunk_size]),'utf-8')
-            hashedData = hashlib.md5(fileR[i:i + chunk_size]).hexdigest()
-            hashList.append(hashedData)
-            hashedSet.add(hashedData)
-            texts[hashedData] = text
+
+        [OriginalSize, ShrinkSize, hashList, Duplic, Unique_chunks] = read_file_chunks(fileR, chunk_size, ShrinkSize, OriginalSize, hashList, Duplic, Unique_chunks)
         
-        #Duplic is a dictionary that stores the hash value as key and the number of times it occurs as value
-        #texts is a dictionary that stores the hash value as key and the chunk as value
+        print ("Hash List : ",hashList)
+        print ("Number of unique chunks",len(Unique_chunks))
+        print ("Chunks with their count : ",Duplic)
+        print ("Original Size : ",OriginalSize)
+        print ("Shrinkage Size :",ShrinkSize)
 
-        Duplic = checkFileDuplicate(hashList, hashedSet, Duplic, texts)
-        # total_size += currentsize
-        Data = createFile(Duplic, texts) # Data = dictionary()
-        AllFiles[file.filename] = [Data, currentsize]
-        print(AllFiles)
-    AllFiles['numberofFiles'] = numberofFiles
-    return make_response(jsonify({'message': 'Success', "Duplic": AllFiles, 'fileSize': currentsize}), 200)
+        createChunks(Unique_chunks, file.filename)
+        # createShrinkFile(Unique_chunks, file.filename)  
+        DedupData[file.filename] = [OriginalSize, ShrinkSize]
+
+    print("AllFiles : ",AllFiles)
+
+    return make_response(jsonify({'message': 'Success', "AllFiles": AllFiles, 'numberofFiles': numberofFiles}), 200)
 
 
-def checkFileDuplicate(hashList, hashedSet, Duplic, texts):        
-    for hash in hashedSet:
-            Duplic[hash] =hashList.count(hash)
-    # size = len(Duplic)*1024
-    # Duplic["size"] = size
+
+def read_file_chunks(fileR, chunk_size, ShrinkSize, OriginalSize, hashList, Duplic, Unique_chunks):
+
+    for i in range(0, len(fileR), chunk_size):
+            chunk = fileR[i:i + chunk_size]
+            OriginalSize += len(fileR[i:i + chunk_size])
+            hashedValue = hashlib.md5(fileR[i:i + chunk_size]).hexdigest()
+            hashList.append(hashedValue)
+
+            if Unique_chunks.get(hashedValue) is None:
+                ShrinkSize += len(fileR[i:i + chunk_size])
+
+            Unique_chunks[hashedValue] = chunk
+            
+    for hash in hashList:
+        Duplic[hash] = hashList.count(hash)    
+
+    return [OriginalSize,ShrinkSize,hashList,Duplic,Unique_chunks]
+
+
+
+def createChunks(Unique_chunks,filename):        
+    
+    file_ext = filename.rsplit('.', 1)[1].lower()
+
     i=0
-    for hash_value, chunk in texts.items():
-        os.makedirs('backend/Chunks/Chunks-'+str(i), exist_ok=True)
-        with open('backend/Chunks/Chunks-'+str(i)+'/chunk_'+str(i)+'.txt', 'wb+') as chunk_file:
-            chunk_file.write(chunk.encode())
-        i+=1
-    return Duplic
+    os.makedirs('backend/Chunks/Chunks-'+filename, exist_ok=True)
+
+    if file_ext in ['txt']:
+       for hash_value, chunk in Unique_chunks.items():
+            chunk = str(bytes(chunk),'utf-8')
+            with open('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.'+file_ext, 'wb+') as chunk_file:
+                chunk_file.write(chunk.encode())
+            i+=1
+
+    elif file_ext in ['jpg', 'png']:
+        for hash_value, chunk in Unique_chunks.items():
+            image_data = BytesIO(chunk)
+            img = Image.open(image_data)
+            img.save('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.'+file_ext)
+
+            # with open('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.'+file_ext, 'wb+') as chunk_file:
+            #     chunk_file.write(chunk)
+            # i+=1
+
+    elif file_ext in ['mp4', 'avi']:
+        pass
+        
 
 
-def createFile(Duplic, texts):
-    f = open("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\db\\test.txt", "wt+")
-    for key, value in texts.items():  
-        f.write(texts[key])
+def createShrinkFile(Unique_chunks,filename):
+    f = open("C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\backend\\Chunks\\Chunks-"+filename+"\\"+filename,"wt+")
+    for hash_value, chunk in Unique_chunks.items():  
+        # chunk = str(bytes(chunk),'utf-8')
+        text = chunk.decode('utf-8')
+        f.write(text)
+        # f.write(str(chunk.encode()))
     f.close()
-    return {'message': 'Success','fileSize': os.stat("C:\\Users\\Arunav\\Desktop\\VTAS_Re\\db\\test.txt").st_size, 'Duplic': Duplic, 'texts': texts}
 
 if __name__ == '__main__':
     app.run(debug=True)

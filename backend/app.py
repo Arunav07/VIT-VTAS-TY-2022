@@ -32,7 +32,13 @@ def FindDuplicate(FileList):
         # # Calculate hash
         file = Hash_File(path)
         # Add or append the file path to Duplic
-    # print(Duplic)
+        if file_hash in Duplic:
+            Duplic[file_hash].append(filename)
+        else:
+            Duplic[file_hash] = [filename]
+
+    print(Duplic)
+ 
     return Duplic
 
 # Joins dictionaries
