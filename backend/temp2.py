@@ -1,4 +1,5 @@
 import hashlib
+from pathlib import Path
 from io import BytesIO
 from PIL import Image
 from flask import Flask, render_template,  request,  jsonify, make_response
@@ -98,40 +99,45 @@ def read_file_chunks(fileR, chunk_size, ShrinkSize, OriginalSize, hashList, Dupl
 
 def createChunks(Unique_chunks,filename):        
     
-    file_ext = filename.rsplit('.', 1)[1].lower()
-
-    i=0
     os.makedirs('backend/Chunks/Chunks-'+filename, exist_ok=True)
+    
+    i=0
+    for hash_value, chunk in Unique_chunks.items():
+        with open('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.txt', 'wb+') as chunk_file:
+            chunk_file.write(chunk)
+        i+=1
 
-    if file_ext in ['txt']:
-       for hash_value, chunk in Unique_chunks.items():
-            chunk = str(bytes(chunk),'utf-8')
-            with open('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.'+file_ext, 'wb+') as chunk_file:
-                chunk_file.write(chunk.encode())
-            i+=1
 
-    elif file_ext in ['jpg', 'png']:
-        for hash_value, chunk in Unique_chunks.items():
-            image_data = BytesIO(chunk)
-            img = Image.open(image_data)
-            img.save('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.'+file_ext)
+    # file_ext = filename.rsplit('.', 1)[1].lower()
+
+
+    # if file_ext in ['txt']:
+    #    for hash_value, chunk in Unique_chunks.items():
+    #         chunk = str(bytes(chunk),'utf-8')
+    #         with open('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.'+file_ext, 'wb+') as chunk_file:
+    #             chunk_file.write(chunk.encode())
+    #         i+=1
+
+    # elif file_ext in ['jpg', 'png']:
+    #     for hash_value, chunk in Unique_chunks.items():
+    #         image_data = BytesIO(chunk)
+    #         img = Image.open(image_data)
+    #         img.save('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.'+file_ext)
 
             # with open('backend/Chunks/Chunks-'+filename+'/chunk_'+str(i)+'.'+file_ext, 'wb+') as chunk_file:
             #     chunk_file.write(chunk)
             # i+=1
 
-    elif file_ext in ['mp4', 'avi']:
-        pass
+    # elif file_ext in ['mp4', 'avi']:
+    #     pass
         
 
 
 def createShrinkFile(Unique_chunks,filename):
-    f = open("C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\backend\\Chunks\\Chunks-"+filename+"\\"+filename,"wt+")
+    filename = Path(filename).stem
+    f = open("C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\backend\\Chunks\\Chunks-"+filename+"\\"+filename+".txt","wb+")
     for hash_value, chunk in Unique_chunks.items():  
-        # chunk = str(bytes(chunk),'utf-8')
-        text = chunk.decode('utf-8')
-        f.write(text)
-        # f.write(str(chunk.encode()))
+        f.write(chunk)
     f.close()
 
 if __name__ == '__main__':
