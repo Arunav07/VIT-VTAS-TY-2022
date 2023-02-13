@@ -70,9 +70,9 @@ def upload():
         # createShrinkFile(Unique_chunks, file.filename)  
         DedupData[file.filename] = [OriginalSize, ShrinkSize]
 
-    print("AllFiles : ",AllFiles)
+    print("AllFiles : ",DedupData)
 
-    return make_response(jsonify({'message': 'Success', "AllFiles": AllFiles, 'numberofFiles': numberofFiles}), 200)
+    return make_response(jsonify({'message': 'Success', "DedupData": DedupData, 'numberofFiles': numberofFiles}), 200)
 
 
 
