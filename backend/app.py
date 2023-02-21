@@ -99,11 +99,11 @@ def read_file_chunks(fileR, chunk_size, ShrinkSize, OriginalSize, hashList, Dupl
 
 def createChunks(Unique_chunks,filename):        
     
-    os.makedirs('C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\Chunks_Database\\Chunks-'+filename, exist_ok=True)
+    os.makedirs('C:\\Users\\Arunav\\Desktop\\VTAS_Re\\backend\\Chunks_Database\\Chunks-'+filename, exist_ok=True)
     
     i=0
     for hash_value, chunk in Unique_chunks.items():
-        with open('C:\\Users\\gurve\\My Projects\\Data_Deduplication-VIT-Veritas-\\Chunks_Database\\Chunks-'+filename+'\\chunk_'+str(i)+'.txt', 'wb+') as chunk_file:
+        with open('C:\\Users\\Arunav\\Desktop\\VTAS_Re\\backend\\Chunks_Database\\Chunks-'+filename+'\\chunk_'+str(i)+'.txt', 'wb+') as chunk_file:
             chunk_file.write(chunk)
         i+=1
 
