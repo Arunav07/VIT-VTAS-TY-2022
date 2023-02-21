@@ -65,7 +65,7 @@
     console.log(JSON.parse(localResult));
     localResult = JSON.parse(localResult);
         
-    let numberOfFiles = localResult["numberofFiles"];
+    let numberOfFiles = localResult?.["numberofFiles"];
     console.log(numberOfFiles);
     let fileNames = Object.keys(localResult?.DedupData);
     console.log(fileNames);
