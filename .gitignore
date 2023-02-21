@@ -4,7 +4,8 @@ tempCodeRunnerFile.py
 *.csv
 College
 Hashes
-backend
+Chunks_Database
+backend/Chunks
 # Created by https://www.toptal.com/developers/gitignore/api/flask
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask
 

@@ -76,6 +76,7 @@
             body: formData
         })
             .then(response => {
+                localStorage.clear();
                 if (response.ok) {
                     return response.json()
                 }
